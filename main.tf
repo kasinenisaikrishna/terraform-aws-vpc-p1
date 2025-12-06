@@ -1,12 +1,12 @@
 resource "aws_vpc" "main" {
-    cidr_block       = var.vpc_cidr
-    enable_dns_hostnames = var.enable_dns_hostnames # default it is false but we need it as true and this variable is extra one copied from argument reference
+  cidr_block           = var.vpc_cidr
+  enable_dns_hostnames = var.enable_dns_hostnames # default it is false but we need it as true and this variable is extra one copied from argument reference
 
   tags = merge(
     var.common_tags,
     var.vpc_tags,
     {
-        Name = local.resource_name
+      Name = local.resource_name
     }
   )
 }
@@ -18,50 +18,50 @@ resource "aws_internet_gateway" "main" {
     var.common_tags,
     var.igw_tags,
     {
-        Name = local.resource_name
+      Name = local.resource_name
     }
   )
 }
 
 resource "aws_subnet" "public" {
-  count = length(var.public_subnet_cidrs)
-  vpc_id     = aws_vpc.main.id
-  cidr_block = var.public_subnet_cidrs[count.index]
-  availability_zone = local.az_names[count.index] # we need to add this from argument reference
-  map_public_ip_on_launch = true # this is only for public subnet
+  count                   = length(var.public_subnet_cidrs)
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = var.public_subnet_cidrs[count.index]
+  availability_zone       = local.az_names[count.index] # we need to add this from argument reference
+  map_public_ip_on_launch = true                        # this is only for public subnet
   tags = merge(
     var.common_tags,
     var.public_subnet_tags,
     {
-        Name = "${local.resource_name}-public-${local.az_names[count.index]}"
+      Name = "${local.resource_name}-public-${local.az_names[count.index]}"
     }
   )
 }
 
 resource "aws_subnet" "private" {
-  count = length(var.private_subnet_cidrs)
-  vpc_id     = aws_vpc.main.id
-  cidr_block = var.private_subnet_cidrs[count.index]
+  count             = length(var.private_subnet_cidrs)
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = var.private_subnet_cidrs[count.index]
   availability_zone = local.az_names[count.index]
   tags = merge(
     var.common_tags,
     var.private_subnet_tags,
     {
-        Name = "${local.resource_name}-private-${local.az_names[count.index]}"
+      Name = "${local.resource_name}-private-${local.az_names[count.index]}"
     }
   )
 }
 
 resource "aws_subnet" "database" {
-  count = length(var.database_subnet_cidrs)
-  vpc_id     = aws_vpc.main.id
-  cidr_block = var.database_subnet_cidrs[count.index]
+  count             = length(var.database_subnet_cidrs)
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = var.database_subnet_cidrs[count.index]
   availability_zone = local.az_names[count.index]
   tags = merge(
     var.common_tags,
     var.database_subnet_tags,
     {
-        Name = "${local.resource_name}-database-${local.az_names[count.index]}"
+      Name = "${local.resource_name}-database-${local.az_names[count.index]}"
     }
   )
 }
@@ -75,13 +75,13 @@ resource "aws_db_subnet_group" "default" { # search terraform aws database subne
     var.common_tags,
     var.db_subnet_group_tags,
     {
-        Name = local.resource_name
+      Name = local.resource_name
     }
   )
 }
 
 resource "aws_eip" "nat" {
-  domain   = "vpc"
+  domain = "vpc"
 }
 
 resource "aws_nat_gateway" "main" {
@@ -92,10 +92,10 @@ resource "aws_nat_gateway" "main" {
     var.common_tags,
     var.nat_gateway_tags,
     {
-        Name = local.resource_name
+      Name = local.resource_name
     }
   )
-  
+
   # To ensure proper ordering, it is recommended to add an explicit dependency
   # on the Internet Gateway for the VPC.
   depends_on = [aws_internet_gateway.main]
