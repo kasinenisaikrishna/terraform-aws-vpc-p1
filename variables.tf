@@ -11,7 +11,6 @@ variable "vpc_cidr" {
 }
 
 variable "enable_dns_hostnames" {
-    type = boolean
     default = true
 }
 
