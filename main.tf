@@ -65,3 +65,17 @@ resource "aws_subnet" "database" {
     }
   )
 }
+
+# db subnet group for rds
+resource "aws_db_subnet_group" "default" { # search terraform aws database subnet group
+  name       = local.resource_name
+  subnet_ids = aws_subnet.database[*].id
+
+  tags = merge(
+    var.common_tags,
+    var.db_subnet_group_tags,
+    {
+        Name = local.resource_name
+    }
+  )
+}
