@@ -8,8 +8,8 @@ data "aws_vpc" "default" {
 
 data "aws_route_table" "main" { # aws main route table data source
   vpc_id = data.aws_vpc.default.id
-  filter {
-    Name  = "association.main"
-    value = true
+  filter { # to get main route table id 
+    name   = "association.main"
+    values = ["true"]
   }
 }
